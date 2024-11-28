@@ -21,6 +21,7 @@
 #include <rime/dict/table.h>
 #include <rime/dict/user_dictionary.h>
 #include <rime/dict/vocabulary.h>
+#include <rime/gear/unity_table_encoder.h>
 
 namespace rime {
 
@@ -383,6 +384,19 @@ size_t UserDictionary::LookupWords(UserDictEntryIterator* result,
       break;
     }
     last_key = key;
+
+    // the threshold must be greater then the default value of 0
+    // in order to delete temporary words created automatically
+    if (UnityTableEncoder::HasPrefix(key) && threshold_ > 0) {
+      UserDbValue v;
+      if (v.Unpack(value)) {
+        if (v.commits > 0 && static_cast<int>(present_tick - v.tick) > threshold_) {
+          v.commits = (std::min)(-1, -v.commits);  
+          db_->Update(key, v.Pack());
+          continue;
+        }
+      }
+    }
     auto e = CreateDictEntry(key, value, present_tick, 1.0, &full_code);
     if (!e)
       continue;
@@ -544,6 +558,8 @@ an<DictEntry> UserDictionary::CreateDictEntry(const string& key,
   double weight = algo::formula_p(0, (double)v.commits / present_tick,
                                   (double)present_tick, v.dee);
   e->weight = log(weight > 0 ? weight : DBL_EPSILON) + credibility;
+  if (present_tick > v.tick)
+    e->tick_diff = static_cast<int>(present_tick - v.tick); 
   if (full_code) {
     *full_code = key.substr(0, separator_pos);
   }

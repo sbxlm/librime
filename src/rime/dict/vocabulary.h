@@ -53,6 +53,7 @@ struct DictEntry {
   int commit_count = 0;
   int remaining_code_length = 0;
   int matching_code_size = 0;
+  int tick_diff = 0;
 
   DictEntry() = default;
   ShortDictEntry ToShort() const { return {text, code, weight}; }

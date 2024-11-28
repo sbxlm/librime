@@ -1,0 +1,3 @@
+RIME_PLUGINS= 
+librime 
+1.7.3-332-gc7ab6390

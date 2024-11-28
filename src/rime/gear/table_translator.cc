@@ -221,6 +221,7 @@ TableTranslator::TableTranslator(const Ticket& ticket)
                     &encode_commit_history_);
     config->GetInt(name_space_ + "/max_phrase_length", &max_phrase_length_);
     config->GetInt(name_space_ + "/max_homographs", &max_homographs_);
+    config->GetInt(name_space_ + "/delete_threshold", &delete_threshold_);
     if (enable_sentence_ || sentence_over_completion_ ||
         contextual_suggestions_) {
       poet_.reset(new Poet(language(), config, Poet::LeftAssociateCompare));
@@ -229,6 +230,7 @@ TableTranslator::TableTranslator(const Ticket& ticket)
   if (enable_encoder_ && user_dict_) {
     encoder_.reset(new UnityTableEncoder(user_dict_.get()));
     encoder_->Load(ticket);
+    user_dict_->set_threshold(delete_threshold_);
   }
 }
 

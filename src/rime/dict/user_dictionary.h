@@ -78,6 +78,8 @@ class UserDictionary : public Class<UserDictionary, const Ticket&> {
 
   const string& name() const { return name_; }
   TickCount tick() const { return tick_; }
+  int threshold() const { return threshold_; }
+  void set_threshold(const int threshold) { threshold_ = threshold; }
 
   static an<DictEntry> CreateDictEntry(const string& key,
                                        const string& value,
@@ -102,6 +104,7 @@ class UserDictionary : public Class<UserDictionary, const Ticket&> {
   hash_map<string, SyllableId> syllabary_;
   hash_map<SyllableId, string> rev_syllabary_;
   TickCount tick_ = 0;
+  int threshold_ = 0;
   time_t transaction_time_ = 0;
 };
 
